@@ -10,7 +10,9 @@
 
 <body>
     <div class="container">
-
+        <header>
+            @include('common.header')
+        </header>
 
         @yield('content')
 
