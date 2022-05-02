@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Note;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Markdown;
+use Illuminate\Support\Facades\Storage;
 
 class NoteController extends Controller
 {
@@ -11,7 +14,7 @@ class NoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
         //
     }
@@ -34,7 +37,24 @@ class NoteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate(['note_text' => 'required']);
+
+        $note = Note::create([
+            'url' => '',
+        ]);
+
+        $path = 'notes/' . $note->id;
+
+        Storage::disk('s3')->put($path, $request->note_text);
+
+        $url = 'https://' . getenv('AWS_BUCKET') . '.s3.amazonsws.com' . $path;
+
+        Note::where('id', $note->id)->update(['url' => $url]);
+
+
+        if ($note->id) {
+            return redirect()->route('notes.show', ['note' => $note->id]);
+        }
     }
 
     /**
@@ -45,7 +65,11 @@ class NoteController extends Controller
      */
     public function show($id)
     {
-        //
+        $note = Note::find($id);
+        $path = 'notes/' . $note->id;
+        $contents = Storage::disk('s3')->get($path);
+        $note->html = Markdown::parse($contents);
+        return view('notes.show', compact('note'));
     }
 
     /**

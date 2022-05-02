@@ -1,11 +1,11 @@
 <section class="w-full">
-    <form class="w-full px-6" action="" method="post" enctype="multipart/form-data">
+    <form class="w-full px-6" method="post" enctype="multipart/form-data" action="{{ route('notes.store') }}">
         @csrf
 
-        <textarea class="input " name="noteTextField" id="noteTextField"></textarea>
+        <textarea class="input " name="note_text" id="note_text"></textarea>
 
         <div class="w-full text-right pa-3 mb-6">
-            <input type="submit" value="Save Note">
+            <input type="Submit" value="Save Note">
             <input type="file" name="uploadFile" id="uploadFile" accept=".txt">
 
         </div>
@@ -19,7 +19,7 @@
 <script>
     // Initialise editors
     const noteTextFieldEditor = new SimpleMDE({
-        element: document.getElementById("noteTextField")
+        element: document.getElementById("note_text")
     });
 
     // file upload listener
